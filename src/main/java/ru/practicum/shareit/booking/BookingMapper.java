@@ -20,14 +20,6 @@ public class BookingMapper {
                 .build();
     }
 
-    public List<BookingDtoOut> toDtos(Iterable<Booking> bookings) {
-        var dtos = new ArrayList<BookingDtoOut>();
-        for (var booking : bookings) {
-            dtos.add(toDto(booking));
-        }
-        return dtos;
-    }
-
     public Booking toBooking(BookingDtoIn bookingDto) {
         var booking = new Booking();
         var start = bookingDto.getStart();
@@ -37,6 +29,7 @@ public class BookingMapper {
         }
         booking.setStart(start);
         booking.setEnd(start);
-        booking.setItem(); // TODO
+        // booking.setItem(); // TODO: add mechanism for getting item objects
+        return booking;
     }
 }
