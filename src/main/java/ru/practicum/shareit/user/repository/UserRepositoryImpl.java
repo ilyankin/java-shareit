@@ -15,13 +15,9 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User save(User user) {
         user.setId(generateId());
-        return users.put(user.getId(), user);
-    }
-
-    @Override
-    public User update(User user) {
-        findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("User с таким id не существует"));
-        return users.put(user.getId(), user);
+        var id = user.getId();
+        users.put(id, user);
+        return users.get(id);
     }
 
     @Override
