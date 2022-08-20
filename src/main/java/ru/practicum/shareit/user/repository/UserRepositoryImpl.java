@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.repository;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.UserEmailAlreadyTakenException;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
@@ -10,11 +11,30 @@ import java.util.Optional;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
+    private static long userCounter = 0;
+
     private final HashMap<Long, User> users = new HashMap<>();
 
     @Override
     public User save(User user) {
+        checkAvailabilityEmail(user);
         user.setId(generateId());
+        var id = user.getId();
+        users.put(id, user);
+        return users.get(id);
+    }
+
+    @Override
+    public User update(User user) {
+        String email = user.getEmail();
+        User userFromDb = findByEmail(email).orElse(null);
+        if (userFromDb != null) {
+            if (user.getEmail() != null && userFromDb.getId().equals(user.getId())) {
+                var id = user.getId();
+                users.put(id, user);
+                return users.get(id);
+            } else throw new UserEmailAlreadyTakenException(email);
+        }
         var id = user.getId();
         users.put(id, user);
         return users.get(id);
@@ -43,9 +63,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private long generateId() {
-        return users.values().stream()
-                .mapToLong(User::getId)
-                .max()
-                .orElse(0) + 1;
+        return ++userCounter;
+    }
+
+    private void checkAvailabilityEmail(User user) {
+        String email = user.getEmail();
+        findByEmail(email).ifPresent((u) -> {
+            throw new UserEmailAlreadyTakenException(email);
+        });
     }
 }
