@@ -24,8 +24,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOut getItemById(Long itemId, Long userId) {
-        var item = itemRepository.findById(itemId).
-                orElseThrow(() -> new ResourceNotFoundException("Item", "id", itemId));
+        var item = itemRepository.findById(itemId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Item", "id", itemId));
         return itemMapper.toItemDto(item);
     }
 

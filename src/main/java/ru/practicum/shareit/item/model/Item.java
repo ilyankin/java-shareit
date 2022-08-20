@@ -5,9 +5,6 @@ import lombok.Data;
 import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.user.User;
 
-/**
- * // TODO .
- */
 @Data
 @Builder
 public class Item {

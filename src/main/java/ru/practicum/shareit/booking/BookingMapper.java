@@ -4,9 +4,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class BookingMapper {
     public BookingDtoOut toDto(Booking booking) {
