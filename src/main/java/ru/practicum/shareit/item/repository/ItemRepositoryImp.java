@@ -1,25 +1,28 @@
 package ru.practicum.shareit.item.repository;
 
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+
+@Repository
 public class ItemRepositoryImp implements ItemRepository {
+    private static long itemCounter = 0;
     private final HashMap<Long, Item> items = new HashMap<>();
 
     @Override
     public Item save(Item item) {
         item.setId(generateId());
-        return items.put(item.getId(), item);
+        items.put(item.getId(), item);
+        return items.get(item.getId());
     }
 
     @Override
     public Item update(Item item) {
-        findById(item.getId()).orElseThrow(() -> new IllegalArgumentException("Item с таким id не существует"));
         return items.put(item.getId(), item);
     }
 
@@ -29,19 +32,22 @@ public class ItemRepositoryImp implements ItemRepository {
     }
 
     @Override
-    public List<Item> findAll() {
-        return new ArrayList<>(items.values());
+    public List<Item> findAllByOwnerId(Long userId) {
+        return items.values().stream()
+                .filter(item -> userId.equals(item.getOwner().getId()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void deleteById(Long id) {
-        items.remove(id);
+    public List<Item> searchByText(String text) {
+        return items.values().stream()
+                .filter(Item::getAvailable)
+                .filter(item -> item.getName().toLowerCase().contains(text)
+                        || item.getDescription().toLowerCase().contains(text))
+                .collect(Collectors.toList());
     }
 
     private long generateId() {
-        return items.values().stream()
-                .mapToLong(Item::getId)
-                .max()
-                .orElse(0) + 1;
+        return ++itemCounter;
     }
 }
