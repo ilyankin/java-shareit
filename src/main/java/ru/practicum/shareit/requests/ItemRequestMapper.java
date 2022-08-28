@@ -21,7 +21,7 @@ public final class ItemRequestMapper {
         return ItemRequest.builder()
                 .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())
-                //        .requester()  TODO: add search requester by id
+                // TODO: add search requester by id
                 .created(itemRequestDto.getCreated() == null ? LocalDateTime.now() : itemRequestDto.getCreated())
                 .build();
     }

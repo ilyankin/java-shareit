@@ -26,7 +26,7 @@ public class BookingMapper {
         }
         booking.setStart(start);
         booking.setEnd(start);
-        // booking.setItem(); // TODO: add mechanism for getting item objects
+        // TODO: add mechanism for getting item objects
         return booking;
     }
 }
