@@ -27,7 +27,8 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDtoOut saveItem(@Valid @RequestBody ItemDtoIn itemDtoIn, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ItemDtoOut saveItem(@Valid @RequestBody ItemDtoIn itemDtoIn,
+                               @RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.saveItem(itemDtoIn, userId);
     }
 

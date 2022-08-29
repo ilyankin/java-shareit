@@ -28,14 +28,13 @@ public class UserRepositoryImpl implements UserRepository {
     public User update(User user) {
         String email = user.getEmail();
         User userFromDb = findByEmail(email).orElse(null);
+        Long id = user.getId();
         if (userFromDb != null) {
-            if (user.getEmail() != null && userFromDb.getId().equals(user.getId())) {
-                var id = user.getId();
+            if (user.getEmail() != null && userFromDb.getId().equals(id)) {
                 users.put(id, user);
                 return users.get(id);
             } else throw new UserEmailAlreadyTakenException(email);
         }
-        var id = user.getId();
         users.put(id, user);
         return users.get(id);
     }
