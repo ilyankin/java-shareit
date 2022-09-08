@@ -1,16 +1,12 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.requests.ItemRequest;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.util.Objects;
 
-@Builder
 @Getter
 @Setter
 @Entity
@@ -21,13 +17,11 @@ public class Item {
     private Long id;
     private String name;
     private String description;
+    @Column(name = "is_available")
     private Boolean available;
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-    @ManyToOne
-    @JoinColumn(name = "request_id")
-    private ItemRequest request;
 
     @Override
     public boolean equals(Object o) {
