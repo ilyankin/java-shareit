@@ -13,9 +13,8 @@ import java.sql.Types;
 public class BookingStatusPostgresEnumType extends EnumType<BookingStatus> {
 
     @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
-            throws HibernateException, SQLException {
-        st.setObject(index, value != null ? ((Enum<?>) value).name() : null, Types.OTHER);
+    public void nullSafeSet(PreparedStatement bookingPreparedStatement, Object value, int index,
+                            SharedSessionContractImplementor session) throws HibernateException, SQLException {
+        bookingPreparedStatement.setObject(index, value != null ? ((Enum<?>) value).name() : null, Types.OTHER);
     }
-
 }
