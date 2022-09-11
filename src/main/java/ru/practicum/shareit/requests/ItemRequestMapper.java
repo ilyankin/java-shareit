@@ -18,11 +18,10 @@ public final class ItemRequestMapper {
     }
 
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
-        return ItemRequest.builder()
-                .id(itemRequestDto.getId())
-                .description(itemRequestDto.getDescription())
-                // TODO: add search requester by id
-                .created(itemRequestDto.getCreated() == null ? LocalDateTime.now() : itemRequestDto.getCreated())
-                .build();
+        final ItemRequest itemRequest = new ItemRequest();
+        itemRequest.setId(itemRequestDto.getId());
+        itemRequest.setDescription(itemRequestDto.getDescription());
+        itemRequest.setCreated(itemRequestDto.getCreated() == null ? LocalDateTime.now() : itemRequestDto.getCreated());
+        return itemRequest;
     }
 }
