@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -39,7 +42,6 @@ public class ItemServiceImpl implements ItemService {
         userService.getUserById(userId);
         var item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundByIdException(itemId));
-
 
         ItemDtoOut itemDto = ItemMapper.toItemDto(item);
         if (item.getOwner().getId().equals(userId)) {
@@ -85,9 +87,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOut> getAllItems(Long userId) {
+    public List<ItemDtoOut> getAllItems(Long userId, Integer from, Integer size) {
         userService.getUserById(userId);
-        var items = itemRepository.findAllByOwnerId(userId);
+
+        var items = itemRepository.findAllByOwnerId(userId,
+                PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id")));
+
         var itemDtos = new ArrayList<ItemDtoOut>();
 
         for (Item item : items) {
@@ -103,8 +108,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOut> searchItem(String text) {
-        return ItemMapper.toItemDtos(itemRepository.searchByText(text.toLowerCase().trim()));
+    public List<ItemDtoOut> searchItem(String text, Integer from, Integer size) {
+        return ItemMapper.toItemDtos(itemRepository.searchByText(text.toLowerCase().trim(), PageRequest.of(from, size)));
     }
 
     @Override
@@ -112,7 +117,7 @@ public class ItemServiceImpl implements ItemService {
         var item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundByIdException(itemId));
         var user = UserMapper.toUser(userService.getUserById(userId));
 
-        if (bookingRepository.findPastBookingsByBookerId(userId).isEmpty()) {
+        if (bookingRepository.findPastBookingsByBookerId(userId, Pageable.unpaged()).isEmpty()) {
             throw new BookingException(String.format("The user {id=%s} don't book the item {id=%s}", userId, itemId));
         }
 

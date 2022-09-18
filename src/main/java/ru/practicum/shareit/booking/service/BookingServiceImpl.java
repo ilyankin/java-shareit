@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
@@ -44,7 +46,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getAllBookingsByBookerId(Long bookerId, String bookingState) {
+    public List<BookingDtoOut> getAllBookingsByBookerId(Long bookerId, String bookingState,
+                                                        Integer from, Integer size) {
         BookingState state;
         try {
             state = BookingState.valueOf(bookingState);
@@ -54,25 +57,27 @@ public class BookingServiceImpl implements BookingService {
 
         userService.getUserById(bookerId);
 
+        Pageable pageable = PageRequest.of(from / size, size);
+
         List<Booking> bookings;
         switch (state) {
             case CURRENT:
-                bookings = bookingRepository.findCurrentBookingsByBookerId(bookerId);
+                bookings = bookingRepository.findCurrentBookingsByBookerId(bookerId, pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findPastBookingsByBookerId(bookerId);
+                bookings = bookingRepository.findPastBookingsByBookerId(bookerId, pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findFutureBookingsByBookerId(bookerId);
+                bookings = bookingRepository.findFutureBookingsByBookerId(bookerId, pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageable);
                 break;
             case ALL:
-                bookings = bookingRepository.findAllByBookerId(bookerId);
+                bookings = bookingRepository.findAllByBookerId(bookerId, pageable);
                 break;
             default:
                 bookings = Collections.emptyList();
@@ -81,7 +86,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getAllBookingsByItemsOwnerId(Long itemsOwnerId, String bookingState) {
+    public List<BookingDtoOut> getAllBookingsByItemsOwnerId(Long itemsOwnerId, String bookingState,
+                                                            Integer from, Integer size) {
         BookingState state;
         try {
             state = BookingState.valueOf(bookingState);
@@ -91,25 +97,29 @@ public class BookingServiceImpl implements BookingService {
 
         userService.getUserById(itemsOwnerId);
 
+        Pageable pageable = PageRequest.of(from / size, size);
+
         List<Booking> bookings;
         switch (state) {
             case CURRENT:
-                bookings = bookingRepository.findCurrentBookingsByItemOwnerId(itemsOwnerId);
+                bookings = bookingRepository.findCurrentBookingsByItemOwnerId(itemsOwnerId, pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findPastBookingsByItemOwnerId(itemsOwnerId);
+                bookings = bookingRepository.findPastBookingsByItemOwnerId(itemsOwnerId, pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findFutureBookingsByItemOwnerId(itemsOwnerId);
+                bookings = bookingRepository.findFutureBookingsByItemOwnerId(itemsOwnerId, pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByItemOwnerIdAndStatus(itemsOwnerId, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatus(itemsOwnerId,
+                        BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByItemOwnerIdAndStatus(itemsOwnerId, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatus(itemsOwnerId,
+                        BookingStatus.REJECTED, pageable);
                 break;
             case ALL:
-                bookings = bookingRepository.findAllByItemOwnerId(itemsOwnerId);
+                bookings = bookingRepository.findAllByItemOwnerId(itemsOwnerId, pageable);
                 break;
             default:
                 bookings = Collections.emptyList();
