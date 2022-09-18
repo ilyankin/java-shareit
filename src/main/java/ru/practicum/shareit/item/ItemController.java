@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.dto.CommentDtoIn;
 import ru.practicum.shareit.comment.dto.CommentDtoOut;
-import ru.practicum.shareit.item.dto.ItemDtoIn;
 import ru.practicum.shareit.item.dto.ItemDtoOut;
+import ru.practicum.shareit.item.dto.ItemDtoIn;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;

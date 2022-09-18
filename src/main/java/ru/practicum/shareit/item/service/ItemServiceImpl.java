@@ -17,10 +17,10 @@ import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final UserService userService;
 
     @Override
@@ -54,6 +55,10 @@ public class ItemServiceImpl implements ItemService {
         var owner = userService.getUserById(userId);
         var item = ItemMapper.toItem(itemDtoIn);
         item.setOwner(UserMapper.toUser(owner));
+        if (itemDtoIn.getRequestId() != null) {
+            itemRequestRepository.findById(itemDtoIn.getRequestId())
+                    .ifPresent(item::setRequest);
+        }
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -114,7 +119,6 @@ public class ItemServiceImpl implements ItemService {
         Comment comment = CommentMapper.toComment(commentDtoIn);
         comment.setItem(item);
         comment.setAuthor(user);
-        comment.setCreated(LocalDateTime.now());
 
         return CommentMapper.toCommentDtoOut(commentRepository.save(comment));
     }

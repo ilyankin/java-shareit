@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.item.ItemNotFoundByIdException;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -7,6 +9,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BookingMapper {
     public static BookingDtoOut toBookingDto(Booking booking) {
         final BookingDtoOut bookingDto = new BookingDtoOut();
