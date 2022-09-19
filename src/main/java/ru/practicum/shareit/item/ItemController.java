@@ -31,7 +31,7 @@ public class ItemController {
     public List<ItemDtoOut> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                         @PositiveOrZero @RequestParam(defaultValue = "0", required = false) Integer from,
                                         @Positive @RequestParam(defaultValue = "10", required = false) Integer size) {
-        return itemService.getAllItems(userId, from, size);
+        return itemService.getItems(userId, from, size);
     }
 
     @PostMapping

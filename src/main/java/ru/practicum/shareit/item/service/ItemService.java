@@ -15,7 +15,7 @@ public interface ItemService {
 
     ItemDtoOut updateItem(ItemDtoIn itemDtoIn, Long itemId, Long userId);
 
-    List<ItemDtoOut> getAllItems(Long userId, Integer from, Integer size);
+    List<ItemDtoOut> getItems(Long userId, Integer from, Integer size);
 
     List<ItemDtoOut> searchItem(String text, Integer from, Integer size);
 

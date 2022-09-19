@@ -32,12 +32,12 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDtoOut> getAllItemRequestByOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDtoOut> getAllItemRequestsByRequesterId(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemRequestService.getItemRequestsByRequesterId(userId);
     }
 
     @GetMapping("/all")
-    public Iterable<ItemRequestDtoOut> getAllItemRequestByUser(
+    public Iterable<ItemRequestDtoOut> getAllItemRequestsFromOtherUsers(
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @PositiveOrZero @RequestParam(defaultValue = "0", required = false) Integer from,
             @Positive @RequestParam(defaultValue = "10", required = false) Integer size) {

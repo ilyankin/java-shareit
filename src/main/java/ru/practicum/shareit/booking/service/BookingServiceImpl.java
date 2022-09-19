@@ -46,8 +46,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getAllBookingsByBookerId(Long bookerId, String bookingState,
-                                                        Integer from, Integer size) {
+    public List<BookingDtoOut> getBookingsByBookerId(Long bookerId, String bookingState,
+                                                     Integer from, Integer size) {
         BookingState state;
         try {
             state = BookingState.valueOf(bookingState);
@@ -86,8 +86,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getAllBookingsByItemsOwnerId(Long itemsOwnerId, String bookingState,
-                                                            Integer from, Integer size) {
+    public List<BookingDtoOut> getBookingsByItemsOwnerId(Long itemsOwnerId, String bookingState,
+                                                         Integer from, Integer size) {
         BookingState state;
         try {
             state = BookingState.valueOf(bookingState);
