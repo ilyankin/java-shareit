@@ -45,6 +45,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoOut> getItemRequestsFromOtherUsers(Long requesterId, Integer from, Integer size) {
+        userService.getUserById(requesterId);
         return ItemRequestMapper.toItemRequestDtos(itemRequestRepository.findAllByRequesterIdNot(requesterId,
                 PageRequest.of(from, size, Sort.by("created").descending())));
     }
