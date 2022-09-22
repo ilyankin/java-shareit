@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
-public class ItemServiceTest {
+public class ItemServiceImplTest {
     @Mock
     private ItemRepository itemRepository;
     @Mock

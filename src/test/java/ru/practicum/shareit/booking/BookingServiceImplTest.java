@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 
 @ExtendWith(MockitoExtension.class)
-public class BookingServiceTest {
+public class BookingServiceImplTest {
     @Mock
     private BookingRepository bookingRepository;
     @Mock

@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
-public class ItemRequestTest {
+public class ItemRequestServiceImplTest {
     @Mock
     private UserService userService;
     @Mock
