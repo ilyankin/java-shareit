@@ -39,8 +39,8 @@ public class ItemRequestServiceImplTest {
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
 
-    private final long REQUESTER_ID = 1;
-    private final long ITEM_REQUEST_ID = 1;
+    private static final long REQUESTER_ID = 1;
+    private static final long ITEM_REQUEST_ID = 1;
 
     private User requester;
     private ItemRequest itemRequest;

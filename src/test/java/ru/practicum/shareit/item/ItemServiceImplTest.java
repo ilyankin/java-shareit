@@ -53,11 +53,11 @@ public class ItemServiceImplTest {
     @InjectMocks
     private ItemServiceImpl itemService;
 
-    private final long USER_ID = 1;
-    private final long REQUESTER_ID = 2;
-    private final long ITEM_ID = 1;
-    private final long COMMENT_ID = 1;
-    private final long ITEM_REQUEST_ID = 1;
+    private static final long USER_ID = 1;
+    private static final long REQUESTER_ID = 2;
+    private static final long ITEM_ID = 1;
+    private static final long COMMENT_ID = 1;
+    private static final long ITEM_REQUEST_ID = 1;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
     private static final LocalDateTime NOW = LocalDateTime.parse(LocalDateTime.now().format(DATE_TIME_FORMATTER));

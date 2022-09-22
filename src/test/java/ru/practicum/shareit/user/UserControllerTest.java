@@ -33,7 +33,7 @@ class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final static long USER_ID = 1;
+    private static final long USER_ID = 1;
     private UserDto userDto;
 
     @BeforeEach
