@@ -86,8 +86,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getBookingsByItemsOwnerId(Long itemsOwnerId, String bookingState,
-                                                         Integer from, Integer size) {
+    public List<BookingDtoOut> getBookingsByItemOwnerId(Long itemsOwnerId, String bookingState,
+                                                        Integer from, Integer size) {
         BookingState state;
         try {
             state = BookingState.valueOf(bookingState);

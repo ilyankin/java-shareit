@@ -23,6 +23,7 @@ import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exception.booking.BookingAccessException;
 import ru.practicum.shareit.exception.booking.BookingException;
 import ru.practicum.shareit.exception.booking.BookingNotFoundByIdException;
+import ru.practicum.shareit.exception.booking.UnknownBookingStateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -150,7 +151,6 @@ public class BookingServiceImplTest {
     void getBookingsByBookerId() {
         Mockito.when(userService.getUserById(Mockito.any()))
                 .thenReturn(UserMapper.toUserDto(user));
-
         Mockito.when(bookingRepository.findAllByBookerId(eq(USER_ID), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(booking));
         Mockito.when(bookingRepository.findAllByBookerIdAndStatus(eq(USER_ID), eq(BookingStatus.REJECTED),
@@ -188,6 +188,26 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    void getBookingsByBookerIdByUnknownBookingState() {
+        var unknownState = "UNKNOWN";
+        var bookingException = Assertions.assertThrows(UnknownBookingStateException.class,
+                () -> bookingService.getBookingsByBookerId(USER_ID, unknownState, 0, 10));
+
+        Assertions.assertEquals(String.format(String.format("Unknown state: %s", unknownState)),
+                bookingException.getMessage());
+    }
+
+    @Test
+    void getBookingsByItemOwnerIdByUnknownBookingState() {
+        var unknownState = "UNKNOWN";
+        var bookingException = Assertions.assertThrows(UnknownBookingStateException.class,
+                () -> bookingService.getBookingsByItemOwnerId(USER_ID, unknownState, 0, 10));
+
+        Assertions.assertEquals(String.format(String.format("Unknown state: %s", unknownState)),
+                bookingException.getMessage());
+    }
+
+    @Test
     void getBookingsByItemOwnerId() {
         Mockito.when(userService.getUserById(Mockito.any()))
                 .thenReturn(UserMapper.toUserDto(user));
@@ -209,19 +229,19 @@ public class BookingServiceImplTest {
 
         List<BookingDtoOut> bookings;
 
-        bookings = bookingService.getBookingsByItemsOwnerId(USER_ID, BookingState.ALL.name(), from, size);
+        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.ALL.name(), from, size);
         assertThat(bookings.size(), is(1));
 
-        bookings = bookingService.getBookingsByItemsOwnerId(USER_ID, BookingState.REJECTED.name(), from, size);
+        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.REJECTED.name(), from, size);
         assertThat(bookings.size(), is(0));
 
-        bookings = bookingService.getBookingsByItemsOwnerId(USER_ID, BookingState.CURRENT.name(), from, size);
+        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.CURRENT.name(), from, size);
         assertThat(bookings.size(), is(1));
 
-        bookings = bookingService.getBookingsByItemsOwnerId(USER_ID, BookingState.FUTURE.name(), from, size);
+        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.FUTURE.name(), from, size);
         assertThat(bookings.size(), is(1));
 
-        bookings = bookingService.getBookingsByItemsOwnerId(USER_ID, BookingState.PAST.name(), from, size);
+        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.PAST.name(), from, size);
         assertThat(bookings.size(), is(1));
 
         Mockito.verify(userService, Mockito.times(5))
@@ -276,7 +296,7 @@ public class BookingServiceImplTest {
                 () -> bookingService.saveBooking(bookingDtoIn, BOOKER_ID));
 
         Assertions.assertEquals(String.format("The owner {id=%s} cannot book his own item {id=%s}",
-                        ITEM_ID, owner.getId()), bookingException.getMessage());
+                ITEM_ID, owner.getId()), bookingException.getMessage());
 
         Mockito.verify(bookingRepository, Mockito.never())
                 .save(Mockito.any());

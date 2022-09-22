@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,8 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comment.dto.CommentDtoIn;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
+import ru.practicum.shareit.exception.item.ItemNotFoundByIdException;
+import ru.practicum.shareit.exception.user.UserIsNotOwnerException;
 import ru.practicum.shareit.item.dto.ItemDtoIn;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -121,12 +124,12 @@ public class ItemServiceImplTest {
                 .thenReturn(UserMapper.toUserDto(user));
         Mockito.when(itemRepository.findById(ITEM_ID))
                 .thenReturn(Optional.of(item));
-        Mockito.when(commentRepository.findCommentsByItemId(COMMENT_ID))
-                .thenReturn(List.of(comment));
         Mockito.when(bookingRepository.findLastBookingByItemId(ITEM_ID))
                 .thenReturn(Optional.of(booking));
         Mockito.when(bookingRepository.findNextBookingByItemId(ITEM_ID))
                 .thenReturn(Optional.of(booking));
+        Mockito.when(commentRepository.findCommentsByItemId(COMMENT_ID))
+                .thenReturn(List.of(comment));
 
         var itemDto = itemService.getItemById(ITEM_ID, USER_ID);
 
@@ -142,6 +145,21 @@ public class ItemServiceImplTest {
                 .findById(ITEM_ID);
     }
 
+    @Test
+    void getItemByWrongId() {
+        Mockito.when(userService.getUserById(USER_ID))
+                .thenReturn(UserMapper.toUserDto(user));
+
+        long wrongItemId = 100;
+        var itemException = Assertions.assertThrows(ItemNotFoundByIdException.class,
+                () -> itemService.getItemById(wrongItemId, USER_ID));
+
+        Assertions.assertEquals(String.format("Item with {id=%s} not found", wrongItemId),
+                itemException.getMessage());
+
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .findById(wrongItemId);
+    }
 
     @Test
     void getAllItemsByUser() {
@@ -199,7 +217,7 @@ public class ItemServiceImplTest {
     void updateItem() {
         Mockito.when(userService.getUserById(USER_ID))
                 .thenReturn(UserMapper.toUserDto(user));
-        Mockito.when(itemRepository.findById(Mockito.any()))
+        Mockito.when(itemRepository.findById(ITEM_ID))
                 .thenReturn(Optional.of(item));
         Mockito.when(itemRepository.save(Mockito.any()))
                 .thenReturn(item);
@@ -213,6 +231,25 @@ public class ItemServiceImplTest {
 
         Mockito.verify(itemRepository, Mockito.times(1))
                 .save(item);
+    }
+
+    @Test
+    void updateItemNotByOwner() {
+        Mockito.when(userService.getUserById(REQUESTER_ID))
+                .thenReturn(UserMapper.toUserDto(requester));
+        Mockito.when(itemRepository.findById(ITEM_ID))
+                .thenReturn(Optional.of(item));
+
+        var itemException = Assertions.assertThrows(UserIsNotOwnerException.class,
+                () -> itemService.updateItem(itemDtoIn, ITEM_ID, REQUESTER_ID));
+
+        Assertions.assertEquals(String.format("User with this {id=%s} is not the owner of item with {id=%s}.",
+                REQUESTER_ID, ITEM_ID), itemException.getMessage());
+
+        Mockito.verify(userService, Mockito.times(1))
+                .getUserById(REQUESTER_ID);
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .findById(ITEM_ID);
     }
 
     @Test

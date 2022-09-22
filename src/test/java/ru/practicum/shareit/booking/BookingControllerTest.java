@@ -103,7 +103,7 @@ class BookingControllerTest {
     @Test
     @DisplayName("successfullyGetBookingsByItemsOwnerIdWithAnyState [200]")
     void getAllBookingsByItemsOwnerId() throws Exception {
-        Mockito.when(bookingService.getBookingsByItemsOwnerId(Mockito.anyLong(), Mockito.anyString(),
+        Mockito.when(bookingService.getBookingsByItemOwnerId(Mockito.anyLong(), Mockito.anyString(),
                         Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(List.of(bookingDtoOut));
 

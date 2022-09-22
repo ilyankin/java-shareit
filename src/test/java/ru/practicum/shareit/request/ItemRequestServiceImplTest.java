@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.exception.request.ItemRequestNotFoundByIdException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDtoIn;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -98,6 +100,23 @@ public class ItemRequestServiceImplTest {
         Mockito.verify(itemRequestRepository, Mockito.times(1))
                 .findById(ITEM_REQUEST_ID);
     }
+
+    @Test
+    void getItemRequestByWrongId() {
+        Mockito.when(userService.getUserById(REQUESTER_ID))
+                .thenReturn(UserMapper.toUserDto(requester));
+
+        long wrongItemRequestId = 100;
+        var itemException = Assertions.assertThrows(ItemRequestNotFoundByIdException.class,
+                () -> itemRequestService.getItemRequestById(REQUESTER_ID, wrongItemRequestId));
+
+        Assertions.assertEquals(String.format("ItemRequest with {id=%s} not found", wrongItemRequestId),
+                itemException.getMessage());
+
+        Mockito.verify(itemRequestRepository, Mockito.times(1))
+                .findById(wrongItemRequestId);
+    }
+
 
     @Test
     void getItemRequestsByRequesterId() {

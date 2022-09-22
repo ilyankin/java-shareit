@@ -40,7 +40,7 @@ public class BookingController {
             @RequestParam(name = "state", defaultValue = "ALL") String bookingState,
             @PositiveOrZero @RequestParam(defaultValue = "0", required = false) Integer from,
             @Positive @RequestParam(defaultValue = "10", required = false) Integer size) {
-        return bookingService.getBookingsByItemsOwnerId(userId, bookingState, from, size);
+        return bookingService.getBookingsByItemOwnerId(userId, bookingState, from, size);
     }
 
     @PostMapping
