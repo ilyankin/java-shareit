@@ -25,104 +25,99 @@ public class BookingRepositoryTest {
     private BookingRepository bookingRepository;
 
     private User user;
-    private User user2;
+    private User userBD;
     private Item item;
+    private Item itemBD;
 
     @BeforeEach
     void init() {
-        user = new User();
-        user.setName("UserName");
-        user.setEmail("user@mail.com");
+        userBD = new User();
+        userBD.setName("UserName");
+        userBD.setEmail("userBD@mail.com");
 
-        user2 = new User();
-        user2.setName("name2");
-        user2.setEmail("email2@mail.ru");
+        itemBD = new Item();
+        itemBD.setName("itemBD");
+        itemBD.setDescription("itemBD");
+        itemBD.setAvailable(true);
+        itemBD.setOwner(userBD);
 
-        item = new Item();
-        item.setName("item");
-        item.setDescription("item");
-        item.setAvailable(true);
-        item.setOwner(user);
-
-        tem.persist(user);
-        tem.persist(user2);
-        tem.persist(item);
-        tem.flush();
+        userBD = tem.persist(userBD);
+        itemBD = tem.persist(itemBD);
     }
 
     @Test
     void findCurrentBookingsByBookerId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now());
         booking.setEnd(LocalDateTime.now().plusSeconds(1));
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findCurrentBookingsByBookerId(user.getId(), Pageable.unpaged());
+        var bookings = bookingRepository.findCurrentBookingsByBookerId(userBD.getId(), Pageable.unpaged());
         assertThat(bookings.size(), is(1));
     }
 
     @Test
     void findPastBookingsByBookerId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().minusDays(2));
         booking.setEnd(LocalDateTime.now().minusDays(1));
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findPastBookingsByBookerId(user.getId(), Pageable.unpaged());
+        var bookings = bookingRepository.findPastBookingsByBookerId(userBD.getId(), Pageable.unpaged());
         assertThat(bookings.size(), is(1));
 
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
 
-        bookings = bookingRepository.findPastBookingsByBookerId(user.getId(), Pageable.unpaged());
+        bookings = bookingRepository.findPastBookingsByBookerId(userBD.getId(), Pageable.unpaged());
         assertThat(bookings.size(), is(0));
     }
 
     @Test
     void findFutureBookingsByBookerId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findFutureBookingsByBookerId(user.getId(), Pageable.unpaged());
+        var bookings = bookingRepository.findFutureBookingsByBookerId(userBD.getId(), Pageable.unpaged());
         assertThat(bookings.size(), is(1));
 
         booking.setStart(LocalDateTime.now().minusDays(2));
         booking.setEnd(LocalDateTime.now().minusDays(1));
 
-        bookings = bookingRepository.findFutureBookingsByBookerId(user.getId(), Pageable.unpaged());
+        bookings = bookingRepository.findFutureBookingsByBookerId(userBD.getId(), Pageable.unpaged());
         assertThat(bookings.size(), is(0));
     }
 
     @Test
     void findAllByBookerIdAndStatus() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now());
         booking.setEnd(LocalDateTime.now());
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findAllByBookerIdAndStatus(user.getId(), BookingStatus.APPROVED,
+        var bookings = bookingRepository.findAllByBookerIdAndStatus(userBD.getId(), BookingStatus.APPROVED,
                 Pageable.unpaged());
         assertThat(bookings.size(), is(1));
 
-        bookings = bookingRepository.findAllByBookerIdAndStatus(user.getId(), BookingStatus.WAITING,
+        bookings = bookingRepository.findAllByBookerIdAndStatus(userBD.getId(), BookingStatus.WAITING,
                 Pageable.unpaged());
         assertThat(bookings.size(), is(0));
     }
@@ -130,15 +125,15 @@ public class BookingRepositoryTest {
     @Test
     void findCurrentBookingsByItemOwnerId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now());
         booking.setEnd(LocalDateTime.now().plusSeconds(1));
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findCurrentBookingsByItemOwnerId(item.getOwner().getId(),
+        var bookings = bookingRepository.findCurrentBookingsByItemOwnerId(itemBD.getOwner().getId(),
                 Pageable.unpaged());
         assertThat(bookings.size(), is(1));
     }
@@ -146,22 +141,22 @@ public class BookingRepositoryTest {
     @Test
     void findPastBookingsByItemOwnerId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().minusDays(2));
         booking.setEnd(LocalDateTime.now().minusDays(1));
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findPastBookingsByItemOwnerId(item.getOwner().getId(),
+        var bookings = bookingRepository.findPastBookingsByItemOwnerId(itemBD.getOwner().getId(),
                 Pageable.unpaged());
         assertThat(bookings.size(), is(1));
 
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
 
-        bookings = bookingRepository.findPastBookingsByItemOwnerId(item.getOwner().getId(),
+        bookings = bookingRepository.findPastBookingsByItemOwnerId(itemBD.getOwner().getId(),
                 Pageable.unpaged());
         assertThat(bookings.size(), is(0));
     }
@@ -169,22 +164,22 @@ public class BookingRepositoryTest {
     @Test
     void findFutureBookingsByItemOwnerId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findFutureBookingsByItemOwnerId(item.getOwner().getId(),
+        var bookings = bookingRepository.findFutureBookingsByItemOwnerId(itemBD.getOwner().getId(),
                 Pageable.unpaged());
         assertThat(bookings.size(), is(1));
 
         booking.setStart(LocalDateTime.now().minusDays(2));
         booking.setEnd(LocalDateTime.now().minusDays(1));
 
-        bookings = bookingRepository.findFutureBookingsByItemOwnerId(item.getOwner().getId(),
+        bookings = bookingRepository.findFutureBookingsByItemOwnerId(itemBD.getOwner().getId(),
                 Pageable.unpaged());
         assertThat(bookings.size(), is(0));
     }
@@ -192,19 +187,19 @@ public class BookingRepositoryTest {
     @Test
     void findAllByItemOwnerIdAndStatus() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now());
         booking.setEnd(LocalDateTime.now());
 
         tem.persist(booking);
 
-        var bookings = bookingRepository.findAllByItemOwnerIdAndStatus(item.getOwner().getId(),
+        var bookings = bookingRepository.findAllByItemOwnerIdAndStatus(itemBD.getOwner().getId(),
                 BookingStatus.APPROVED, Pageable.unpaged());
         assertThat(bookings.size(), is(1));
 
-        bookings = bookingRepository.findAllByItemOwnerIdAndStatus(item.getOwner().getId(),
+        bookings = bookingRepository.findAllByItemOwnerIdAndStatus(itemBD.getOwner().getId(),
                 BookingStatus.WAITING, Pageable.unpaged());
         assertThat(bookings.size(), is(0));
     }
@@ -212,50 +207,50 @@ public class BookingRepositoryTest {
     @Test
     void findLastBookingByItemId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().minusDays(2));
         booking.setEnd(LocalDateTime.now().minusDays(1));
 
         tem.persist(booking);
 
-        var maybeBooking = bookingRepository.findLastBookingByItemId(item.getId());
+        var maybeBooking = bookingRepository.findLastBookingByItemId(itemBD.getId());
         assertThat(maybeBooking.isPresent(), is(true));
 
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
 
-        maybeBooking = bookingRepository.findLastBookingByItemId(item.getId());
+        maybeBooking = bookingRepository.findLastBookingByItemId(itemBD.getId());
         assertThat(maybeBooking.isPresent(), is(false));
     }
 
     @Test
     void findNextBookingByItemId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
 
         tem.persist(booking);
 
-        var maybeBooking = bookingRepository.findNextBookingByItemId(item.getId());
+        var maybeBooking = bookingRepository.findNextBookingByItemId(itemBD.getId());
         assertThat(maybeBooking.isPresent(), is(true));
 
         booking.setStart(LocalDateTime.now().minusDays(2));
         booking.setEnd(LocalDateTime.now().minusDays(1));
 
-        maybeBooking = bookingRepository.findNextBookingByItemId(item.getId());
+        maybeBooking = bookingRepository.findNextBookingByItemId(itemBD.getId());
         assertThat(maybeBooking.isPresent(), is(false));
     }
 
     @Test
     void findLastFinishedBookingByBookerIdAndItemId() {
         var booking = new Booking();
-        booking.setBooker(user);
-        booking.setItem(item);
+        booking.setBooker(userBD);
+        booking.setItem(itemBD);
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().minusDays(2));
         booking.setEnd(LocalDateTime.now().minusDays(1));
@@ -263,13 +258,13 @@ public class BookingRepositoryTest {
         tem.persist(booking);
 
         var maybeBooking = bookingRepository.findLastFinishedBookingByBookerIdAndItemId(
-                user.getId(), item.getId());
+                userBD.getId(), itemBD.getId());
         assertThat(maybeBooking.isPresent(), is(true));
 
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
 
-        maybeBooking = bookingRepository.findLastFinishedBookingByBookerIdAndItemId(user.getId(), item.getId());
+        maybeBooking = bookingRepository.findLastFinishedBookingByBookerIdAndItemId(userBD.getId(), itemBD.getId());
         assertThat(maybeBooking.isPresent(), is(false));
     }
 }

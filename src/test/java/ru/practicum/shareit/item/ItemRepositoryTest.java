@@ -31,7 +31,7 @@ public class ItemRepositoryTest {
         user2.setEmail("user2@mail.com");
         user2.setName("User2Name");
 
-        tem.persist(user1);
+        var user1DB = tem.persist(user1);
         tem.persist(user2);
 
         var item1Owner1 = new Item();
@@ -52,13 +52,13 @@ public class ItemRepositoryTest {
         item2Owner1.setAvailable(true);
         item2Owner1.setOwner(user1);
 
-        tem.persist(item1Owner1);
-        tem.persist(item2Owner1);
+        var item1Owner1DB = tem.persist(item1Owner1);
+        var item2Owner1DB = tem.persist(item2Owner1);
         tem.persist(item3Owner2);
 
-        var result = itemRepository.findAllByOwnerId(user1.getId(), Pageable.unpaged());
+        var result = itemRepository.findAllByOwnerId(user1DB.getId(), Pageable.unpaged());
         assertThat(result.size(), is(2));
-        assertThat(result, is(List.of(item1Owner1, item2Owner1)));
+        assertThat(result, is(List.of(item1Owner1DB, item2Owner1DB)));
     }
 
     @Test
@@ -87,12 +87,12 @@ public class ItemRepositoryTest {
         item3.setAvailable(true);
         item3.setOwner(user);
 
-        tem.persist(item1);
-        tem.persist(item2);
+        var item1DB = tem.persist(item1);
+        var item2DB = tem.persist(item2);
         tem.persist(item3);
 
         var result = itemRepository.searchByText("item", Pageable.unpaged());
         assertThat(result.size(), is(2));
-        assertThat(result, is(List.of(item1, item2)));
+        assertThat(result, is(List.of(item1DB, item2DB)));
     }
 }

@@ -54,17 +54,20 @@ public class ItemRequestRepositoryTest {
         itemRequest3.setDescription("ItemRequest3Description");
         itemRequest3.setCreated(LocalDateTime.now());
 
+        tem.clear();
+        var requester1DB = tem.persist(requester1);
         tem.persist(requester2);
         tem.persist(item);
         tem.persist(itemRequest1);
         tem.persist(itemRequest2);
         tem.persist(itemRequest3);
 
-        var itemRequestsByRequesterId = itemRequestRepository.findAllByRequesterId(1L, Sort.unsorted());
+        var itemRequestsByRequesterId =
+                itemRequestRepository.findAllByRequesterId(requester1DB.getId(), Sort.unsorted());
         assertThat(itemRequestsByRequesterId.size(), is(2));
 
         var itemRequestsByRequesterIdNot = itemRequestRepository
-                .findAllByRequesterIdNot(1L, Pageable.unpaged());
+                .findAllByRequesterIdNot(requester1DB.getId(), Pageable.unpaged());
         assertThat(itemRequestsByRequesterIdNot.size(), is(1));
     }
 }
