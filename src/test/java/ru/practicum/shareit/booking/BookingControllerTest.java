@@ -5,6 +5,8 @@ import org.apache.catalina.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -147,13 +149,13 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.status", is(bookingDtoOut.getStatus().name()), String.class));
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     @DisplayName("successfullyUpdateBookingStatus [200]")
-    void updateBookingStatus() throws Exception {
+    void updateBookingStatus(boolean approved) throws Exception {
         Mockito.when(bookingService.updateBookingStatus(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyBoolean()))
                 .thenAnswer(invocationOnMock -> {
-                    boolean approved = invocationOnMock.getArgument(2, Boolean.class);
-                    if (approved) {
+                    if (invocationOnMock.getArgument(2, Boolean.class)) { // approved
                         bookingDtoOut.setStatus(BookingStatus.APPROVED);
                     } else {
                         bookingDtoOut.setStatus(BookingStatus.REJECTED);
@@ -161,14 +163,7 @@ class BookingControllerTest {
                     return bookingDtoOut;
                 });
 
-        mvc.perform(patch("/bookings/{bookingId}?approved=true", BOOKING_ID)
-                        .header(USER_ID_HEADER, USER_ID_HEADER_VALUE)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(bookingDtoOut.getStatus().name()), String.class));
-
-        mvc.perform(patch("/bookings/{bookingId}?approved=false", BOOKING_ID)
+        mvc.perform(patch("/bookings/{bookingId}?approved=" + approved, BOOKING_ID)
                         .header(USER_ID_HEADER, USER_ID_HEADER_VALUE)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
@@ -34,6 +36,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoOut getBooking(Long bookerId, Long bookingId) {
+        log.debug("The request to getBooking(bookerId={}, bookingId={})", bookerId, bookingId);
         var booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new BookingNotFoundByIdException(bookingId));
 
@@ -41,13 +44,14 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingAccessException(
                     String.format("The user {id=%s} is not allowed to view the item {id=%s}", bookerId, bookingId));
         }
-
         return BookingMapper.toBookingDto(booking);
     }
 
     @Override
     public List<BookingDtoOut> getBookingsByBookerId(Long bookerId, String bookingState,
                                                      Integer from, Integer size) {
+        log.debug("The request to getBookingsByBookerId(bookerId={}, bookingState={}, from={}, size={})",
+                bookerId, bookingState, from, size);
         BookingState state;
         try {
             state = BookingState.valueOf(bookingState);
@@ -88,6 +92,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoOut> getBookingsByItemOwnerId(Long itemsOwnerId, String bookingState,
                                                         Integer from, Integer size) {
+        log.debug("The request to getBookingsByItemOwnerId(bookerId={}, bookingState={}, from={}, size={})",
+                itemsOwnerId, bookingState, from, size);
         BookingState state;
         try {
             state = BookingState.valueOf(bookingState);
@@ -129,6 +135,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoOut saveBooking(BookingDtoIn bookingDtoIn, Long bookerId) {
+        log.debug("The request to saveBooking(bookingDtoIn={}, bookerId={})", bookingDtoIn, bookerId);
         var booker = userService.getUserById(bookerId);
         var booking = BookingMapper.toBooking(bookingDtoIn, itemRepository);
         validateBooking(booking, bookerId);
@@ -141,6 +148,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoOut updateBookingStatus(Long bookingId, Long userId, boolean approved) {
+        log.debug("The request to updateBookingStatus(bookingId={}, userId={}, approved={})",
+                bookingId, userId, approved);
         userService.getUserById(userId);
         var booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundByIdException(bookingId));

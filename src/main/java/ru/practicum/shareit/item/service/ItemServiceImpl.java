@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,6 +30,7 @@ import java.util.List;
 
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
@@ -39,6 +41,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOut getItemById(Long itemId, Long userId) {
+        log.debug("The request to getItemById(itemId={}, userId={})", itemId, userId);
         userService.getUserById(userId);
         var item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundByIdException(itemId));
@@ -54,6 +57,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOut saveItem(ItemDtoIn itemDtoIn, Long userId) {
+        log.debug("The request to saveItem(itemDtoIn={}, userId={})", itemDtoIn, userId);
         var owner = userService.getUserById(userId);
         var item = ItemMapper.toItem(itemDtoIn);
         item.setOwner(UserMapper.toUser(owner));
@@ -66,6 +70,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOut updateItem(ItemDtoIn itemDtoIn, Long itemId, Long userId) {
+        log.debug("The request to updateItem(itemDtoIn={}, itemId={}, userId={})", itemDtoIn, itemId, userId);
         var owner = userService.getUserById(userId);
         var item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundByIdException(itemId));
@@ -88,6 +93,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoOut> getItems(Long userId, Integer from, Integer size) {
+        log.debug("The request to getItems(itemDtoIn={}, itemId={}, userId={})", userId, from, size);
         userService.getUserById(userId);
 
         var items = itemRepository.findAllByOwnerId(userId,
@@ -109,11 +115,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoOut> searchItem(String text, Integer from, Integer size) {
+        log.debug("The request to searchItem(text={}, from={}, size={})", text, from, size);
         return ItemMapper.toItemDtos(itemRepository.searchByText(text.toLowerCase().trim(), PageRequest.of(from, size)));
     }
 
     @Override
     public CommentDtoOut saveComment(CommentDtoIn commentDtoIn, Long userId, Long itemId) {
+        log.debug("The request to saveComment(commentDtoIn={}, userId={}, itemId={})", commentDtoIn, userId, itemId);
         var item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundByIdException(itemId));
         var user = UserMapper.toUser(userService.getUserById(userId));
 
