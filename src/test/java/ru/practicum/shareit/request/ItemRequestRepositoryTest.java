@@ -54,7 +54,6 @@ public class ItemRequestRepositoryTest {
         itemRequest3.setDescription("ItemRequest3Description");
         itemRequest3.setCreated(LocalDateTime.now());
 
-        tem.clear();
         var requester1DB = tem.persist(requester1);
         tem.persist(requester2);
         tem.persist(item);

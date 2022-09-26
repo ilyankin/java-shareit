@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
@@ -147,8 +149,20 @@ public class BookingServiceImplTest {
                 .findById(wrongBookingId);
     }
 
-    @Test
-    void getBookingsByBookerId() {
+    private static Stream<Arguments> getBookingsByBookerIdProvider() {
+        return Stream.of(
+                Arguments.of(BookingState.ALL, 1),
+                Arguments.of(BookingState.REJECTED, 0),
+                Arguments.of(BookingState.CURRENT, 1),
+                Arguments.of(BookingState.FUTURE, 1),
+                Arguments.of(BookingState.PAST, 1)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("getBookingsByItemOwnerIdProvider")
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void getBookingsByBookerId(BookingState bookingState, int bookingCount) {
         Mockito.when(userService.getUserById(Mockito.any()))
                 .thenReturn(UserMapper.toUserDto(user));
         Mockito.when(bookingRepository.findAllByBookerId(eq(USER_ID), Mockito.any(Pageable.class)))
@@ -168,23 +182,8 @@ public class BookingServiceImplTest {
 
         List<BookingDtoOut> bookings;
 
-        bookings = bookingService.getBookingsByBookerId(USER_ID, BookingState.ALL.name(), from, size);
-        assertThat(bookings.size(), is(1));
-
-        bookings = bookingService.getBookingsByBookerId(USER_ID, BookingState.REJECTED.name(), from, size);
-        assertThat(bookings.size(), is(0));
-
-        bookings = bookingService.getBookingsByBookerId(USER_ID, BookingState.CURRENT.name(), from, size);
-        assertThat(bookings.size(), is(1));
-
-        bookings = bookingService.getBookingsByBookerId(USER_ID, BookingState.FUTURE.name(), from, size);
-        assertThat(bookings.size(), is(1));
-
-        bookings = bookingService.getBookingsByBookerId(USER_ID, BookingState.PAST.name(), from, size);
-        assertThat(bookings.size(), is(1));
-
-        Mockito.verify(userService, Mockito.times(5))
-                .getUserById(USER_ID);
+        bookings = bookingService.getBookingsByBookerId(USER_ID, bookingState.name(), from, size);
+        assertThat(bookings.size(), is(bookingCount));
     }
 
     @Test
@@ -207,8 +206,20 @@ public class BookingServiceImplTest {
                 bookingException.getMessage());
     }
 
-    @Test
-    void getBookingsByItemOwnerId() {
+    private static Stream<Arguments> getBookingsByItemOwnerIdProvider() {
+        return Stream.of(
+                Arguments.of(BookingState.ALL, 1),
+                Arguments.of(BookingState.REJECTED, 0),
+                Arguments.of(BookingState.CURRENT, 1),
+                Arguments.of(BookingState.FUTURE, 1),
+                Arguments.of(BookingState.PAST, 1)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("getBookingsByItemOwnerIdProvider")
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void getBookingsByItemOwnerId(BookingState bookingState, int bookingCount) {
         Mockito.when(userService.getUserById(Mockito.any()))
                 .thenReturn(UserMapper.toUserDto(user));
 
@@ -229,22 +240,10 @@ public class BookingServiceImplTest {
 
         List<BookingDtoOut> bookings;
 
-        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.ALL.name(), from, size);
-        assertThat(bookings.size(), is(1));
+        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, bookingState.name(), from, size);
+        assertThat(bookings.size(), is(bookingCount));
 
-        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.REJECTED.name(), from, size);
-        assertThat(bookings.size(), is(0));
-
-        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.CURRENT.name(), from, size);
-        assertThat(bookings.size(), is(1));
-
-        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.FUTURE.name(), from, size);
-        assertThat(bookings.size(), is(1));
-
-        bookings = bookingService.getBookingsByItemOwnerId(USER_ID, BookingState.PAST.name(), from, size);
-        assertThat(bookings.size(), is(1));
-
-        Mockito.verify(userService, Mockito.times(5))
+        Mockito.verify(userService, Mockito.times(1))
                 .getUserById(USER_ID);
     }
 
