@@ -36,7 +36,7 @@ class RestExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus status,
             WebRequest request) {
 
-        ErrorResponse errorResponse = new ErrorResponse(status);
+        var errorResponse = new ErrorResponse(status);
         errorResponse.setMessage("Validation error");
 
         errorResponse.addValidationErrors(ex.getBindingResult().getFieldErrors());

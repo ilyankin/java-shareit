@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS item_requests CASCADE;
+DROP TABLE IF EXISTS requests CASCADE;
 DROP TABLE IF EXISTS items CASCADE;
 DROP TYPE IF EXISTS booking_status CASCADE;
 DROP TABLE IF EXISTS bookings CASCADE;
@@ -26,7 +26,9 @@ CREATE TABLE IF NOT EXISTS items
     name         varchar(255) NOT NULL,
     description  text         NOT NULL,
     is_available boolean      NOT NULL,
-    owner_id     bigint REFERENCES users (id)
+    owner_id     bigint REFERENCES users (id),
+    request_id   bigint REFERENCES requests(id),
+    CONSTRAINT uq_owner_item_name UNIQUE(owner_id, name)
 );
 
 CREATE TYPE booking_status AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED');
