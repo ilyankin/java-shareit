@@ -15,7 +15,6 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.booking.BookingAccessException;
 import ru.practicum.shareit.exception.booking.BookingException;
 import ru.practicum.shareit.exception.booking.BookingNotFoundByIdException;
-import ru.practicum.shareit.exception.booking.UnknownBookingStateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -52,12 +51,7 @@ public class BookingServiceImpl implements BookingService {
                                                      Integer from, Integer size) {
         log.debug("The request to getBookingsByBookerId(bookerId={}, bookingState={}, from={}, size={})",
                 bookerId, bookingState, from, size);
-        BookingState state;
-        try {
-            state = BookingState.valueOf(bookingState);
-        } catch (IllegalArgumentException ignore) {
-            throw new UnknownBookingStateException(bookingState);
-        }
+        var state = BookingState.valueOf(bookingState);
 
         userService.getUserById(bookerId);
 
@@ -94,12 +88,7 @@ public class BookingServiceImpl implements BookingService {
                                                         Integer from, Integer size) {
         log.debug("The request to getBookingsByItemOwnerId(bookerId={}, bookingState={}, from={}, size={})",
                 itemsOwnerId, bookingState, from, size);
-        BookingState state;
-        try {
-            state = BookingState.valueOf(bookingState);
-        } catch (IllegalArgumentException ignore) {
-            throw new UnknownBookingStateException(bookingState);
-        }
+        var state = BookingState.valueOf(bookingState);
 
         userService.getUserById(itemsOwnerId);
 
