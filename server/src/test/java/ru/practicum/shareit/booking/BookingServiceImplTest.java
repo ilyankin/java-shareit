@@ -25,7 +25,6 @@ import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exception.booking.BookingAccessException;
 import ru.practicum.shareit.exception.booking.BookingException;
 import ru.practicum.shareit.exception.booking.BookingNotFoundByIdException;
-import ru.practicum.shareit.exception.booking.UnknownBookingStateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -184,26 +183,6 @@ public class BookingServiceImplTest {
 
         bookings = bookingService.getBookingsByBookerId(USER_ID, bookingState.name(), from, size);
         assertThat(bookings.size(), is(bookingCount));
-    }
-
-    @Test
-    void getBookingsByBookerIdByUnknownBookingState() {
-        var unknownState = "UNKNOWN";
-        var bookingException = Assertions.assertThrows(UnknownBookingStateException.class,
-                () -> bookingService.getBookingsByBookerId(USER_ID, unknownState, 0, 10));
-
-        Assertions.assertEquals(String.format(String.format("Unknown state: %s", unknownState)),
-                bookingException.getMessage());
-    }
-
-    @Test
-    void getBookingsByItemOwnerIdByUnknownBookingState() {
-        var unknownState = "UNKNOWN";
-        var bookingException = Assertions.assertThrows(UnknownBookingStateException.class,
-                () -> bookingService.getBookingsByItemOwnerId(USER_ID, unknownState, 0, 10));
-
-        Assertions.assertEquals(String.format(String.format("Unknown state: %s", unknownState)),
-                bookingException.getMessage());
     }
 
     private static Stream<Arguments> getBookingsByItemOwnerIdProvider() {

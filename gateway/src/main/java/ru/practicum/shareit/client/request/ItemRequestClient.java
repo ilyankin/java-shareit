@@ -37,6 +37,7 @@ public class ItemRequestClient extends BaseClient {
         Map<String, Object> parameters = Map.of("from", from, "size", size);
         return get("/all", userId, parameters);
     }
+
     public ResponseEntity<Object> createItemRequest(Long userId, ItemRequestDtoIn itemRequest) {
         return post("", userId, itemRequest);
     }
